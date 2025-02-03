@@ -51,7 +51,7 @@ public class SistemaProcessual {
 
             switch (opcao) {
                 case 1 -> adicionarContato(scanner);
-                case 2 -> FileManager.listarTodosContatos(PATH_CONTATOS);  // Listar todos os contatos
+                case 2 -> FileManager.obterListaDeContatos(PATH_CONTATOS);  // Listar todos os contatos
                 case 3 -> buscarContato(scanner);  // Buscar contato
                 case 4 -> removerContato(scanner); // Remover contato
                 case 5 -> atualizarContato(scanner); // Atualizar contato
@@ -179,35 +179,49 @@ public class SistemaProcessual {
 
     // Adicionar Processo
     private static void adicionarProcesso(Scanner scanner) {
-        // Lógica de adição de processo
         System.out.print("Digite o Número do Processo: ");
         int numeroProcesso = scanner.nextInt();
         scanner.nextLine(); // Consumir a nova linha
-
+    
         System.out.print("Digite o Tipo de Ação: ");
         String tipoAcao = scanner.nextLine();
-
-        System.out.print("Digite o ID Autor: ");
-        int autor =  scanner.nextInt();
+    
+        System.out.print("Digite o ID do Autor: ");
+        int autorId = scanner.nextInt();
         scanner.nextLine();
-
-        System.out.print("Digite o Nome do Réu: ");
-        String reu = scanner.nextLine();
-
-        System.out.print("Digite o ID Advogado: ");
-        int advogado = scanner.nextInt();
+        
+        if (!FileManager.verificarContatoExiste(autorId, PATH_CONTATOS)) {
+            System.out.println("Erro: O ID do autor não existe.");
+            return;
+        }
+    
+        System.out.print("Digite o ID do Réu: ");
+        int reu = scanner.nextInt();
         scanner.nextLine();
-
-        Processo processo = new Processo(numeroProcesso, tipoAcao, autor, reu, advogado);
-
+        
+        if (!FileManager.verificarContatoExiste(reu, PATH_CONTATOS)) {
+            System.out.println("Erro: O ID do réu não existe.");
+            return;
+        }
+    
+        System.out.print("Digite o ID do Advogado: ");
+        int advogadoId = scanner.nextInt();
+        scanner.nextLine();
+    
+        if (!FileManager.verificarAdvogadoExiste(advogadoId, PATH_ADVOGADOS)) {
+            System.out.println("Erro: O ID do advogado não existe.");
+            return;
+        }
+    
+        Processo processo = new Processo(numeroProcesso, tipoAcao, autorId, reu, advogadoId);
+    
         try {
-            FileManager.gravarProcesso(processo, PATH_PROCESSOS);
+            FileManager.gravarProcesso(processo, PATH_PROCESSOS, tipoAcao);
             System.out.println("Processo salvo com sucesso!");
         } catch (IOException e) {
             System.out.println("Erro ao salvar o processo: " + e.getMessage());
         }
     }
-
     // Buscar Contato
     private static void buscarContato(Scanner scanner) {
         // Lógica de busca de contato
@@ -304,24 +318,46 @@ private static void atualizarAdvogado(Scanner scanner) {
 private static void atualizarProcesso(Scanner scanner) {
     System.out.print("Digite o Número do Processo que deseja atualizar: ");
     int numeroProcesso = scanner.nextInt();
-    scanner.nextLine(); // Consumir nova linha
+    scanner.nextLine(); // Consumir a nova linha
 
     System.out.print("Digite o Novo Tipo de Ação: ");
     String tipoAcao = scanner.nextLine();
 
     System.out.print("Digite o Novo ID do Autor: ");
-    int autor = scanner.nextInt();
+    int autorId = scanner.nextInt();
     scanner.nextLine();
 
-    System.out.print("Digite o Novo Nome do Réu: ");
-    String reu = scanner.nextLine();
+    // Verificar se o ID do autor existe
+    if (!FileManager.verificarContatoExiste(autorId, PATH_CONTATOS)) {
+        System.out.println("Erro: O ID do autor não existe.");
+        return;
+    }
+
+    System.out.print("Digite o Novo ID do Réu: ");
+    int reu = scanner.nextInt();
+
+    // Verificar se o ID do réu existe
+    if (!FileManager.verificarContatoExiste(reu, PATH_CONTATOS)) {
+        System.out.println("Erro: O ID do réu não existe.");
+        return;
+    }
 
     System.out.print("Digite o Novo ID do Advogado: ");
-    int advogado = scanner.nextInt();
+    int advogadoId = scanner.nextInt();
     scanner.nextLine();
 
-    Processo novoProcesso = new Processo(numeroProcesso, tipoAcao, autor, reu, advogado);
+    // Verificar se o ID do advogado existe
+    if (!FileManager.verificarAdvogadoExiste(advogadoId, PATH_ADVOGADOS)) {
+        System.out.println("Erro: O ID do advogado não existe.");
+        return;
+    }
+
+    // Atualizar o processo com os novos dados
+    Processo novoProcesso = new Processo(numeroProcesso, tipoAcao, autorId, reu, advogadoId);
+    
     FileManager.reescreverProcesso(numeroProcesso, novoProcesso, PATH_PROCESSOS);
+    System.out.println("Processo atualizado com sucesso!");
 }
+
 
 }

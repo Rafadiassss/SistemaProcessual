@@ -4,11 +4,11 @@ public class Processo {
     int numeroProcesso;
     String tipoAcao;
     int autorId;
-    String reu;
+    int reu;
     int advogadoId;  // Se for um id de advogado, deve ser do tipo int
 
     // Construtor da classe Processo
-    public Processo(int numeroProcesso, String tipoAcao, int autorId, String reu, int advogadoId) {
+    public Processo(int numeroProcesso, String tipoAcao, int autorId, int reu, int advogadoId) {
         this.numeroProcesso = numeroProcesso;
         this.tipoAcao = tipoAcao;
         this.autorId = autorId;
